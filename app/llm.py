@@ -7,14 +7,23 @@ result (from tools.py), builds a single prompt, and asks the LLM to answer
 using ONLY that information. This "grounding" is the whole point of RAG —
 it stops the model from making things up.
 
-This version uses Ollama — a free tool that runs an AI model directly on
-your own computer. No API key, no account, no cost. See README for setup.
+This version uses Groq — a free, fast LLM API (no credit card required).
+Works both locally and when deployed to the cloud (unlike Ollama, which
+needs to run on the same machine). Get a free key at console.groq.com.
 """
 
+import os
 import requests
 
-OLLAMA_URL = "http://localhost:11434/api/chat"
-MODEL_NAME = "llama3.2"   # must match the model you pulled with `ollama pull llama3.2`
+GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
+MODEL_NAME = "llama-3.1-8b-instant"
+
+_api_key = os.getenv("GROQ_API_KEY")
+if not _api_key:
+    raise RuntimeError(
+        "GROQ_API_KEY is not set. Create a .env file (copy .env.example) "
+        "and paste your free Groq key into it before running the server."
+    )
 
 SYSTEM_PROMPT = """You are an AI support assistant for a payments platform (like Razorpay).
 Answer the user's question using ONLY the context provided below.
@@ -37,18 +46,20 @@ User question: {question}
 Answer:"""
 
     response = requests.post(
-        OLLAMA_URL,
+        GROQ_URL,
+        headers={"Authorization": f"Bearer {_api_key}"},
         json={
             "model": MODEL_NAME,
             "messages": [
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": user_prompt},
             ],
-            "stream": False,
+            "temperature": 0.2,
         },
-        timeout=120,
+        timeout=30,
     )
     response.raise_for_status()
     data = response.json()
-    return data["message"]["content"]
+    return data["choices"][0]["message"]["content"]
+
 
