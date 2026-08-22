@@ -1,0 +1,29 @@
+Q: Why did my payment fail?
+A: Payments commonly fail due to insufficient balance, incorrect card details, bank server downtime, exceeding the daily transaction limit, or the issuing bank declining the transaction for security reasons. Check with your bank if the issue persists.
+
+Q: How long does a refund take to process?
+A: Refunds are typically processed within 5-7 business days, though the exact time depends on your bank or card network. Once initiated, the refund is credited to the original payment method.
+
+Q: What is a payment gateway?
+A: A payment gateway is a technology that captures and transfers payment data from a customer to the acquiring bank, enabling merchants to accept online payments securely via cards, UPI, netbanking, or wallets.
+
+Q: What should I do if money was debited but the order shows failed?
+A: This usually happens due to a delay in confirmation from the bank. In most cases, the amount is auto-reversed within 5-7 working days. If not, raise a support ticket with the transaction reference ID.
+
+Q: What is UPI and how does it work?
+A: UPI (Unified Payments Interface) is a real-time payment system developed by NPCI that allows instant money transfer between bank accounts using a mobile device, without needing card or bank details.
+
+Q: What is a payment gateway settlement cycle?
+A: Settlement is the process of transferring the payment amount from the payment gateway to the merchant's bank account, usually happening on a T+1 or T+2 business day basis.
+
+Q: Why is 2-factor authentication required for online payments?
+A: 2FA (such as OTP verification) is mandated by RBI guidelines in India to add an extra layer of security, ensuring the person making the payment is the authorized cardholder.
+
+Q: What are the common payment failure error codes?
+A: Common codes include: INSUFFICIENT_FUNDS (low balance), CARD_DECLINED (bank rejection), GATEWAY_TIMEOUT (server delay), INVALID_CVV (wrong card verification value), and BANK_SERVER_DOWN (temporary bank outage).
+
+Q: What is the difference between authorization and capture in payments?
+A: Authorization is when the bank confirms that funds are available and reserves them. Capture is when the merchant actually collects the reserved funds, which may happen immediately or after a delay (e.g., after order shipment).
+
+Q: How can I check my transaction status?
+A: You can check your transaction status using the transaction ID or order ID through the merchant's order history page, or by contacting support with the reference number.

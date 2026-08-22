@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>AI Payments Support Assistant</title>
+<style>
+  :root {
+    --ink: #101828;
+    --muted: #667085;
+    --line: #e4e7ec;
+    --accent: #155eef;
+    --bg: #f9fafb;
+    --bubble-bot: #ffffff;
+    --bubble-user: #155eef;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+  }
+  .app {
+    width: 100%;
+    max-width: 640px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--line);
+    background: #fff;
+  }
+  header h1 {
+    font-size: 17px;
+    margin: 0 0 4px;
+  }
+  header p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .msg {
+    max-width: 80%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+  }
+  .msg.bot {
+    align-self: flex-start;
+    background: var(--bubble-bot);
+    border: 1px solid var(--line);
+    border-bottom-left-radius: 2px;
+  }
+  .msg.user {
+    align-self: flex-end;
+    background: var(--bubble-user);
+    color: #fff;
+    border-bottom-right-radius: 2px;
+  }
+  .tag {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #eef4ff;
+    color: var(--accent);
+    border: 1px solid #d6e4ff;
+  }
+  form {
+    display: flex;
+    gap: 8px;
+    padding: 16px;
+    border-top: 1px solid var(--line);
+    background: #fff;
+  }
+  input {
+    flex: 1;
+    padding: 11px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    font-size: 14px;
+    outline: none;
+  }
+  input:focus { border-color: var(--accent); }
+  button {
+    padding: 0 18px;
+    border-radius: 10px;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  button:disabled { opacity: 0.5; cursor: default; }
+  .hint {
+    font-size: 12px;
+    color: var(--muted);
+    padding: 0 20px 12px;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>AI Payments Support Assistant</h1>
+    <p>RAG-powered FAQ answers + live transaction lookup (try "status of TXN1002")</p>
+  </header>
+  <div class="messages" id="messages">
+    <div class="msg bot">Hi! Ask me about payment failures, refunds, UPI, or check a transaction like TXN1001–TXN1004.</div>
+  </div>
+  <div class="hint" id="hint"></div>
+  <form id="form">
+    <input id="input" type="text" placeholder="e.g. Why did my payment fail?" autocomplete="off" />
+    <button type="submit" id="send">Send</button>
+  </form>
+</div>
+
+<script>
+  const form = document.getElementById('form');
+  const input = document.getElementById('input');
+  const messages = document.getElementById('messages');
+  const send = document.getElementById('send');
+
+  function addMessage(text, sender, tag) {
+    const div = document.createElement('div');
+    div.className = 'msg ' + sender;
+    div.textContent = text;
+    if (tag) {
+      const t = document.createElement('div');
+      t.className = 'tag';
+      t.textContent = tag;
+      div.appendChild(t);
+    }
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const question = input.value.trim();
+    if (!question) return;
+    addMessage(question, 'user');
+    input.value = '';
+    send.disabled = true;
+
+    try {
+      const res = await fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question })
+      });
+      const data = await res.json();
+      addMessage(data.answer, 'bot', data.tool_called ? 'live tool call used' : 'RAG answer');
+    } catch (err) {
+      addMessage('Something went wrong talking to the server.', 'bot');
+    } finally {
+      send.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
