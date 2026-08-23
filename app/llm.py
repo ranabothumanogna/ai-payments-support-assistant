@@ -16,7 +16,7 @@ import os
 import requests
 
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
-MODEL_NAME = "llama-3.1-8b-instant"
+MODEL_NAME = "openai/gpt-oss-20b"
 
 _api_key = os.getenv("GROQ_API_KEY")
 if not _api_key:
